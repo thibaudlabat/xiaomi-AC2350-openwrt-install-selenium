@@ -7,10 +7,16 @@ import requests
 from paramiko.ssh_exception import SSHException
 from scp import SCPClient
 from paramiko_expect import SSHClientInteraction
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
+
+colorama_init()
 
 from scraper import Scraper
 from variables import *
 
+print(f"{Fore.RED}BEGIN{Style.RESET_ALL}")
 
 def compute_passwd(serial: str) -> str:
     return hashlib.md5(serial.encode() + b"6d2df50a-250f-4a30-a5e6-d44fb0960aa0").hexdigest()[:8]
