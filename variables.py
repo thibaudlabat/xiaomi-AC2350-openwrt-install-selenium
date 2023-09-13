@@ -12,3 +12,5 @@ FLASH_SCRIPT = rel_path('flash_firmware.sh')
 WIFI_SCRIPT = rel_path('default-wifi.sh')
 WIFI_SSID = "FBI"
 WIFI_PASSWORD = "jesaispas"
+
+DRIVER_PATH="./bin/geckodriver-v0.33.0-linux64"

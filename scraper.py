@@ -1,15 +1,19 @@
 import time
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from variables import *
+from selenium.webdriver.firefox.service import Service
 
+from variables import *
 
 class Scraper:
     def __init__(self):
-        os.environ['MOZ_HEADLESS'] = '1'
-        self.driver = webdriver.Firefox(executable_path="./geckodriver-v0.33.0-linux64")
+        #os.environ['MOZ_HEADLESS'] = '1'
+        service = Service(executable_path=DRIVER_PATH)
+        options = webdriver.FirefoxOptions()
+        self.driver = webdriver.Firefox(service=service, options=options)
         self.wait = WebDriverWait(self.driver, MAX_WAIT)
 
     def __enter__(self):

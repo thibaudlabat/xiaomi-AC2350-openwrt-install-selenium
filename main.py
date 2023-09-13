@@ -1,7 +1,9 @@
+# Python native imports
 import hashlib
 import socket
 import time
 
+# External dependencies
 import paramiko
 import requests
 from paramiko.ssh_exception import SSHException
@@ -13,6 +15,7 @@ from colorama import Style
 
 colorama_init()
 
+# Internal imports
 from scraper import Scraper
 from variables import *
 
