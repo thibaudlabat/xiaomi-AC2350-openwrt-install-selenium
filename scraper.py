@@ -9,7 +9,7 @@ from variables import *
 class Scraper:
     def __init__(self):
         os.environ['MOZ_HEADLESS'] = '1'
-        self.driver = webdriver.Firefox(executable_path="./geckodriver")
+        self.driver = webdriver.Firefox(executable_path="./geckodriver-v0.33.0-linux64")
         self.wait = WebDriverWait(self.driver, MAX_WAIT)
 
     def __enter__(self):
