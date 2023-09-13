@@ -94,8 +94,8 @@ def main():
         ssh_install_openwrt(password)
     while not check_port_open("192.168.1.1", 22):
         time.sleep(3)
-    ssh_openwrt_set_passwd("aze")
-    ssh_openwrt_configure("aze")
+    #ssh_openwrt_set_passwd("aze")
+    #ssh_openwrt_configure("aze")
 
 
 # Press the green button in the gutter to run the script.
