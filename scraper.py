@@ -63,8 +63,9 @@ class Scraper:
         self.fill_field("name", "rez")
         self.click_button("/html/body/div[1]/div/div[1]/form[2]/div/label[2]/div/input")
         self.fill_field("password", "jesaispas")
-        self.click_buttons(["/html/body/div[1]/div/div[1]/form[2]/div/div[6]/button",
-                           "/html/body/div/div/div[3]/div[2]/div[4]/p[1]"])
+        self.click_button("/html/body/div/div/div[1]/form[2]/div/div[6]/button")
+                          # "/html/body/div/div/div[3]/div[2]/div[4]/p[1]"])
+        
 
     def auth_to_webadmin(self) -> str:
         # Second phase
@@ -83,7 +84,9 @@ class Scraper:
         self.click_buttons(['//*[@id="isreset"]', '//*[@id="btnFlashrom"]'])
 
     def initial_setup_cn(self):
-        self.driver.get(f"http://{ROUTER_IP}/init.html#/home")
+        #anciennement
+        #self.driver.get(f"http://{ROUTER_IP}/init.html#/home")
+        self.driver.get("http://miwifi.com/init.html#/home")
         clicks = {
             'Next': '/html/body/div/div/div[2]/div[2]/a',
             'continue_no_internet': '/html/body/div/div/div[2]/p[2]/a',
