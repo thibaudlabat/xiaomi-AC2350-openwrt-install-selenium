@@ -30,43 +30,46 @@ def ssh_install_openwrt(password):
     print("etape b")
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     print("etape c")
-    input()
     ssh.connect(hostname=ROUTER_IP, port=22, username='root', password=password)
     print("etape d")
-    input()
     with SCPClient(ssh.get_transport()) as scp_client:
         print("etape e")
-        input()
         scp_client.put(FLASH_SCRIPT, "/tmp/flash_firmware.sh")
         print("etape f")
-        input()
+
         scp_client.put(OPENWRT_PATH, "/tmp/openwrt.bin")
     print("etape g")
-    input()
     stdin, stdout, stderr = ssh.exec_command("chmod +x /tmp/flash_firmware.sh")
     print("etape h")
-    input()
     print("".join(stdout.readlines()))
     print("etape i")
-    input()
     stdin, stdout, stderr = ssh.exec_command("/bin/ash /tmp/flash_firmware.sh &")
     print("etape j")
-    input()
+    input("waiting input")
+    print("stderr :")
+    print("".join(stderr.readlines()))
+    print("stdout :")
     print("".join(stdout.readlines()))
 
 
-def ssh_openwrt_set_passwd(admin_passwd):
+
+def ssh_openwrt_set_passwd(admin_passwd, pwd):
+    print("etape a")
     ssh = paramiko.SSHClient()
+    print("etape b")
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        ssh.connect(hostname="192.168.1.1", port=22, username='root')
+        print("etape c")
+        ssh.connect(hostname="192.168.31.1", port=22, username='root', password=pwd)
     except SSHException as e:  # Force login without password
+        print("etape d (except)")
         ssh.get_transport().auth_none('root')
+
     with SSHClientInteraction(ssh, timeout=10, display=True) as interact:
+        print("etape e")
         interact.expect('.*root.*')  # expecting root@host1:~
         interact.send('passwd')
-        interact.expect(
-            ['.*password.*', '.*password.*'])  # expect multiline output both containing the phrase 'password'
+        interact.expect(['.*password.*', '.*password.*'])  # expect multiline output both containing the phrase 'password'
         interact.send(admin_passwd)
         interact.expect('.*password.*')  # expect 'Retype password: '
         interact.send(admin_passwd)
@@ -74,15 +77,26 @@ def ssh_openwrt_set_passwd(admin_passwd):
     ssh.close()
 
 
-def ssh_openwrt_configure(admin_passwd):
+def ssh_openwrt_configure(admin_passwd) :
+    print("etape a")
     ssh = paramiko.SSHClient()
+    print("etape b")
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname="192.168.1.1", port=22, username='root', password=admin_passwd)
+    print("etape c")
+    ssh.connect(hostname="192.168.31.1", port=22, username='root', password=admin_passwd)
+    print("etape d")
     with SCPClient(ssh.get_transport()) as scp_client:
+        print("etape e")
         scp_client.put(WIFI_SCRIPT, "/tmp/default-wifi.sh")
+    print("etape f")
     stdin, stdout, stderr = ssh.exec_command("chmod +x /tmp/default-wifi.sh")
+    print("etape g")
     print("".join(stdout.readlines()) + "".join(stderr.readlines()))
+    print("etape h")
     print(f"Executing /bin/ash /tmp/default-wifi.sh {WIFI_SSID} {WIFI_PASSWORD} &")
+    print("etape i")
     stdin, stdout, stderr = ssh.exec_command(f"/bin/ash /tmp/default-wifi.sh {WIFI_SSID} {WIFI_PASSWORD} &")
+    print("etape j")
     print("".join(stdout.readlines()) + "".join(stderr.readlines()))
+    print("etape k (ssh close)")
     ssh.close()

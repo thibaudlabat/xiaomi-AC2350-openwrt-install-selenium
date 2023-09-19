@@ -69,7 +69,9 @@ class Scraper:
 
     def auth_to_webadmin(self) -> str:
         # Second phase
+        print(f"aller à {ROUTER_URL}/web/")
         self.driver.get(f"{ROUTER_URL}/web/")
+        print("accédé")
         self.fill_field("router_password", "jesaispas")
         self.click_buttons(['//*[@id="btnRtSubmit"]', "/html/body/div[1]/div[1]/div/div/h1/a/img"])
         return self.driver.current_url.split("=")[1].split("/")[0]

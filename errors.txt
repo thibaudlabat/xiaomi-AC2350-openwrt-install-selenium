@@ -1,3 +1,30 @@
 192.168.31.1
 http://192.168.31.1/cgi-bin/luci
 http://192.168.31.1/cgi-bin/luci/api/misystem/router_info
+
+Traceback (most recent call last):
+  File "/home/nathan/Documents/Scolaire/1A/rezel/script_flash_box/xiaomi-AC2350-openwrt-install-selenium/tools.py", line 65, in ssh_openwrt_set_passwd
+    ssh.connect(hostname="192.168.31.1", port=22, username='root')
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/client.py", line 485, in connect
+    self._auth(
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/client.py", line 818, in _auth
+    raise saved_exception
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/client.py", line 754, in _auth
+    self._transport.auth_publickey(username, key)
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/transport.py", line 1658, in auth_publickey
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
+paramiko.ssh_exception.AuthenticationException: Authentication failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/nathan/Documents/Scolaire/1A/rezel/script_flash_box/xiaomi-AC2350-openwrt-install-selenium/main.py", line 100, in <module>
+    ssh_openwrt_set_passwd("aze")
+  File "/home/nathan/Documents/Scolaire/1A/rezel/script_flash_box/xiaomi-AC2350-openwrt-install-selenium/tools.py", line 68, in ssh_openwrt_set_passwd
+    ssh.get_transport().auth_none('root')
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/transport.py", line 1524, in auth_none
+    return self.auth_handler.wait_for_response(my_event)
+  File "/home/nathan/.cache/pypoetry/virtualenvs/xiaomi-ac2350-openwrt-install-selenium-jVBPZao4-py3.10/lib/python3.10/site-packages/paramiko/auth_handler.py", line 263, in wait_for_response
+    raise e
