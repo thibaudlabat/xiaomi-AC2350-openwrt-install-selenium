@@ -50,14 +50,15 @@ class Scraper:
         self.click_buttons(clicks.values())
 
     def fill_forms(self):
-        fields = {
-            "ip": "10.42.0.10",
-            "mask": "255.255.255.0",
-            "gateway": "10.42.0.1",
-            "dns1": "10.42.0.1"
-        }
-        for name, value in fields.items():
-            self.fill_field(name, value)
+        ##à décomenter si on choisit 'static id' dans initial_setup_cn
+        # fields = {
+        #     "ip": "10.42.0.10",
+        #     "mask": "255.255.255.0",
+        #     "gateway": "10.42.0.1",
+        #     "dns1": "10.42.0.1"
+        # }
+        # for name, value in fields.items():
+        #     self.fill_field(name, value)
         self.click_buttons(["/html/body/div/div/div[1]/form[1]/div[2]/button",
                             "/html/body/div[1]/div/div[1]/form[2]/div/label[1]/div/input"])
         self.fill_field("name", "rez")
@@ -69,8 +70,9 @@ class Scraper:
 
     def auth_to_webadmin(self) -> str:
         # Second phase
-        print(f"aller à {ROUTER_URL}/web/")
-        self.driver.get(f"{ROUTER_URL}/web/")
+        #print(f"aller à {ROUTER_URL}/web/")
+        #self.driver.get(f"{ROUTER_URL}/web/")
+        self.driver.get(f"http://router.miwifi.com")
         print("accédé")
         self.fill_field("router_password", "jesaispas")
         self.click_buttons(['//*[@id="btnRtSubmit"]', "/html/body/div[1]/div[1]/div/div/h1/a/img"])
@@ -92,7 +94,8 @@ class Scraper:
         clicks = {
             'Next': '/html/body/div/div/div[2]/div[2]/a',
             'continue_no_internet': '/html/body/div/div/div[2]/p[2]/a',
-            'static ip': '/html/body/div/div/div[2]/ul/li[3]'
+            #'static ip': '/html/body/div/div/div[2]/ul/li[3]' anciennement
+            'dhcp' : '/html/body/div/div/div[2]/ul/li[2]'
         }
         self.click_buttons(clicks.values())
 
