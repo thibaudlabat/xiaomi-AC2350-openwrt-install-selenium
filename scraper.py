@@ -20,6 +20,7 @@ class Scraper:
         return self
 
     def click_button(self, xpath):
+        print("Looking for button", flush=True)
         element = self.wait.until(EC.element_to_be_clickable(
                 (By.XPATH, xpath)))
         print(f"clicking on button {element.text}")
@@ -59,12 +60,10 @@ class Scraper:
         # }
         # for name, value in fields.items():
         #     self.fill_field(name, value)
-        self.click_buttons(["/html/body/div/div/div[1]/form[1]/div[2]/button",
-                            "/html/body/div[1]/div/div[1]/form[2]/div/label[1]/div/input"])
         self.fill_field("name", "rez")
-        self.click_button("/html/body/div[1]/div/div[1]/form[2]/div/label[2]/div/input")
+        #self.click_button("/html/body/div[1]/div/div[1]/form[2]/div/label[2]/div/input")
         self.fill_field("password", "jesaispas")
-        self.click_button("/html/body/div/div/div[1]/form[2]/div/div[6]/button")
+        self.click_button("/html/body/div/div/div[1]/form/div[2]/button")
                           # "/html/body/div/div/div[3]/div[2]/div[4]/p[1]"])
         
 
@@ -72,6 +71,8 @@ class Scraper:
         # Second phase
         #print(f"aller à {ROUTER_URL}/web/")
         #self.driver.get(f"{ROUTER_URL}/web/")
+        self.driver.get(f"http://router.miwifi.com")
+        time.sleep(5.)
         self.driver.get(f"http://router.miwifi.com")
         print("accédé")
         self.fill_field("router_password", "jesaispas")

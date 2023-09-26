@@ -52,34 +52,34 @@ print(mac)
 instance = Scraper()
 #fin de "pour reprendre à l'étape 5"
 
-print("Etape 5 : (sleep 10) ", end='')
+print("Etape 5 : (sleep 10) ", end='', flush=True)
 time.sleep(10.)
 instance.initial_setup_cn()
 pp_ok()
 
-print("Etape 6 : (sleep 10)", end='')
+print("Etape 6 : (sleep 10)", end='', flush=True)
 time.sleep(10.)
 instance.fill_forms()
 pp_ok()
 
 print("Etape 7 (sleep 30): ", end='', flush=True)
-input('waiting for input')
+time.sleep(30.)
 stok = instance.auth_to_webadmin()
 pp_ok()
 
-print("Etape 8 (serial number): ", end='')
+print("Etape 8 (serial number): ", end='', flush=True)
 sn = instance.get_serial()
 print(f'{sn=}')
 pp_ok()
 
-print("Etape 9 (enable ssh) : ", end='')
+print("Etape 9 (enable ssh) : ", end='', flush=True)
 enable_ssh = requests.get(
     f"{ROUTER_URL}/;stok={stok}/api/misystem/set_config_iotdev?bssid=any&user_id=any&ssid=-h%0Anvram%20set%20ssh_en%3D1%0Anvram%20commit%0Ased%20-i%20%27s%2Fchannel%3D.%2A%2Fchannel%3D%5C%5C%22debug%5C%5C%22%2Fg%27%20%2Fetc%2Finit.d%2Fdropbear%0A%2Fetc%2Finit.d%2Fdropbear%20start%0A")
 pp_ok()
 
-print("enabling ssh:" + enable_ssh.text)
+print("enabling ssh:" + enable_ssh.text, flush=True)
 
-print("Etape 10 : Attendre ouverture port 22 :")
+print("Etape 10 : Attendre ouverture port 22 :", flush=True)
 while not check_port_open(ROUTER_IP, 22):
     print("Attend ouverture port 22", flush=True)
     time.sleep(3)
@@ -87,9 +87,10 @@ pp_ok()
 
 
 password = compute_passwd(sn)
-print(f'{password=}')
+print(f'{password=}')#4f5852b7
 
-print("Etape 11 : install openwrt :")
+print("Etape 11 : install openwrt (sleep 10) :", flush=True)
+time.sleep(10.)
 ssh_install_openwrt("aze")
 # pp_ok()
 
