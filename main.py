@@ -8,8 +8,12 @@ from tools import *
 def pp_ok() :
     print(f"\t {Fore.GREEN}OK{Style.RESET_ALL}")
 
+FLASH_ALL = False
+FLASH_CHINESE = False
 
-if False:
+
+
+if FLASH_ALL:
     print(f"Test de connectivité sur {ROUTER_IP}:80", end="")
     while not check_port_open(ROUTER_IP, 80):
         time.sleep(3)
@@ -45,54 +49,51 @@ if False:
         print("Attente de l'ouverture port 80 ", flush=True)
         time.sleep(3)
 
-#pour reprendre à l'étape 5
-router_info = requests.get(f"{ROUTER_URL}/api/misystem/router_info").json()
-mac = router_info['mac']
-print(mac)
-instance = Scraper()
-#fin de "pour reprendre à l'étape 5"
+if FLASH_CHINESE :
+    # pour reprendre à l'étape 5
+    router_info = requests.get(f"{ROUTER_URL}/api/misystem/router_info").json()
+    mac = router_info['mac']
+    print(mac)
+    instance = Scraper()
+    # fin de "pour reprendre à l'étape 5"
 
-print("Etape 5 : (sleep 10) ", end='', flush=True)
-time.sleep(10.)
-instance.initial_setup_cn()
-pp_ok()
+if (FLASH_CHINESE or FLASH_ALL) :
+    print("Etape 5 (sleep 10) : continue without internet, setup dhcp ", end='', flush=True)
+    time.sleep(10.)
+    instance.initial_setup_cn()
 
-print("Etape 6 : (sleep 10)", end='', flush=True)
-time.sleep(10.)
-instance.fill_forms()
-pp_ok()
+    print("Etape 6 (sleep 3) : ", end='', flush=True)
+    time.sleep(3.)
+    instance.fill_forms_ch()
 
-print("Etape 7 (sleep 30): ", end='', flush=True)
-time.sleep(30.)
-stok = instance.auth_to_webadmin()
-pp_ok()
+    print("Etape 7 (sleep 20): ", end='', flush=True)
+    time.sleep(20.)
+    stok = instance.auth_to_webadmin_ch()
 
-print("Etape 8 (serial number): ", end='', flush=True)
-sn = instance.get_serial()
-print(f'{sn=}')
-pp_ok()
+    print("Etape 8 (serial number): ", end='', flush=True)
+    sn = instance.get_serial()
+    print(f'{sn=}')
 
-print("Etape 9 (enable ssh) : ", end='', flush=True)
-enable_ssh = requests.get(
-    f"{ROUTER_URL}/;stok={stok}/api/misystem/set_config_iotdev?bssid=any&user_id=any&ssid=-h%0Anvram%20set%20ssh_en%3D1%0Anvram%20commit%0Ased%20-i%20%27s%2Fchannel%3D.%2A%2Fchannel%3D%5C%5C%22debug%5C%5C%22%2Fg%27%20%2Fetc%2Finit.d%2Fdropbear%0A%2Fetc%2Finit.d%2Fdropbear%20start%0A")
-pp_ok()
+    print("Etape 9 (enable ssh via requests) : ", end='', flush=True)
+    enable_ssh = requests.get(
+        f"http://{ROUTER_IP}/cgi-bin/luci/;stok={stok}/api/misystem/set_config_iotdev?bssid=any&user_id=any&ssid=-h%0Anvram%20set%20ssh_en%3D1%0Anvram%20commit%0Ased%20-i%20%27s%2Fchannel%3D.%2A%2Fchannel%3D%5C%5C%22debug%5C%5C%22%2Fg%27%20%2Fetc%2Finit.d%2Fdropbear%0A%2Fetc%2Finit.d%2Fdropbear%20start%0A")
 
-print("enabling ssh:" + enable_ssh.text, flush=True)
+    print("enabling ssh:" + enable_ssh.text, flush=True)
 
-print("Etape 10 : Attendre ouverture port 22 :", flush=True)
-while not check_port_open(ROUTER_IP, 22):
-    print("Attend ouverture port 22", flush=True)
-    time.sleep(3)
-pp_ok()
+    print("Etape 10 : Attendre ouverture port 22 :", flush=True)
+    while not check_port_open(ROUTER_IP, 22):
+        print("Attend ouverture port 22", flush=True)
+        time.sleep(3)
 
+    password = compute_passwd(sn)
+    print(f'{password=}')
 
-password = compute_passwd(sn)
-print(f'{password=}')#4f5852b7
+if not FLASH_CHINESE :
+    password = "1adbbf6b"
 
 print("Etape 11 : install openwrt (sleep 10) :", flush=True)
-time.sleep(10.)
-ssh_install_openwrt("aze")
-# pp_ok()
+# time.sleep(10.)
+ssh_install_openwrt_bis(password)
 
 # while not check_port_open("192.168.31.1", 22):
 #     print("Waiting for port 22 to open", flush=True)

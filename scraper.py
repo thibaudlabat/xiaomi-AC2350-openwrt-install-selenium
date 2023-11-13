@@ -40,17 +40,34 @@ class Scraper:
         print(self.driver.title)
         clicks = {
             "select_country": "/html/body/div/div/div[3]/div[1]/div[1]/a",
-            "France": "/html/body/div/div/div[2]/div[2]/div[3]/ul[11]/li",
+            "menu_deroulant": "/html/body/div/div/div[2]/div[2]/div[2]/li",
+            "France": "/html/body/div/div/div[2]/div[2]/div[3]/ul[10]/li",
             "next": "/html/body/div/div/div[2]/div[2]/div[3]/button",
             "accept_checkbox": "/html/body/div/div/div[3]/div[1]/div[2]/input",
             "try_it_button": "/html/body/div/div/div[3]/div[2]/a",
             "continue_without_internet": "/html/body/div/div/div[2]/p[2]/a",
-            "static_ip": "/html/body/div/div/div[1]/div[2]/ul/li[3]",
-            "next2": "/html/body/div/div/div[3]"
+            "dhcp": "/html/body/div/div/div[2]/ul/li[2]",
+            # "next2": "/html/body/div/div/div[3]"
         }
         self.click_buttons(clicks.values())
 
     def fill_forms(self):
+        ##à décomenter si on choisit 'static id' dans initial_setup_cn
+        # fields = {
+        #     "ip": "10.42.0.10",
+        #     "mask": "255.255.255.0",
+        #     "gateway": "10.42.0.1",
+        #     "dns1": "10.42.0.1"
+        # }
+        # for name, value in fields.items():
+        #     self.fill_field(name, value)
+        self.fill_field("name", "rez")
+        #self.click_button("/html/body/div[1]/div/div[1]/form[2]/div/label[2]/div/input")
+        self.fill_field("password", "jesaispas")
+        self.click_button("/html/body/div/div/div[1]/form/div[2]/button")
+                          # "/html/body/div/div/div[3]/div[2]/div[4]/p[1]"])
+    
+    def fill_forms_ch(self):
         ##à décomenter si on choisit 'static id' dans initial_setup_cn
         # fields = {
         #     "ip": "10.42.0.10",
@@ -71,10 +88,20 @@ class Scraper:
         # Second phase
         #print(f"aller à {ROUTER_URL}/web/")
         #self.driver.get(f"{ROUTER_URL}/web/")
-        self.driver.get(f"http://router.miwifi.com")
-        time.sleep(5.)
-        self.driver.get(f"http://router.miwifi.com")
+        self.driver.get(f"http://miwifi.com/cgi-bin/luci/web")
+        time.sleep(1.)
         print("accédé")
+        self.fill_field("router_password", "jesaispas")
+        self.click_buttons(['//*[@id="btnRtSubmit"]', "/html/body/div[1]/div[1]/div/div/h1/a/img"])
+        return self.driver.current_url.split("=")[1].split("/")[0]
+
+    def auth_to_webadmin_ch(self) -> str:
+        # Second phase
+        #print(f"aller à {ROUTER_URL}/web/")
+        #self.driver.get(f"{ROUTER_URL}/web/")
+        while (self.driver.current_url != "http://miwifi.com/cgi-bin/luci/web") :
+            self.driver.get(f"http://miwifi.com/cgi-bin/luci/web")
+            time.sleep(1.)
         self.fill_field("router_password", "jesaispas")
         self.click_buttons(['//*[@id="btnRtSubmit"]', "/html/body/div[1]/div[1]/div/div/h1/a/img"])
         return self.driver.current_url.split("=")[1].split("/")[0]

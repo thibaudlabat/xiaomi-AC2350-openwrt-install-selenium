@@ -3,8 +3,11 @@ import hashlib
 import socket
 import time
 
+
+
 # External dependencies
 import paramiko
+import re
 import requests
 from paramiko.ssh_exception import SSHException
 from scp import SCPClient
@@ -25,33 +28,101 @@ def check_port_open(address: str, port: int) -> bool:
 
 
 def ssh_install_openwrt(password):
-    print("etape a")
     ssh = paramiko.SSHClient()
-    print("etape b")
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    print("etape c")
+
+    print("Connection à la box en ssh ")
     ssh.connect(hostname=ROUTER_IP, port=22, username='root', password=password)
-    print("etape d")
+
     with SCPClient(ssh.get_transport()) as scp_client:
-        print("etape e")
         scp_client.put(FLASH_SCRIPT, "/tmp/flash_firmware.sh")
-        print("etape f")
-
         scp_client.put(OPENWRT_PATH, "/tmp/openwrt.bin")
-    print("etape g")
+    print("Changement des permissions sur flash_firmware.sh :")
     stdin, stdout, stderr = ssh.exec_command("chmod +x /tmp/flash_firmware.sh")
-    print("etape h")
+    
     print("".join(stdout.readlines()))
-    print("etape i")
-    stdin, stdout, stderr = ssh.exec_command("/bin/ash /tmp/flash_firmware.sh &")
-    print("etape j")
+    print("Lance le script flash_firmware.sh")
+    # stdin, stdout, stderr = ssh.exec_command("cat /etc/passwd")
+    
+#FIXME : utiliser invoke_shell pour executer les commandes
+
+    stdin, stdout, stderr = ssh.exec_command("/bin/ash /tmp/flash_firmware.sh")
+    # stdout.channel.recv_exit_status()
     input("waiting input")
-    print("stderr :")
+    print("stdout")
     print("".join(stderr.readlines()))
-    print("stdout :")
+    print("stderr")
     print("".join(stdout.readlines()))
 
+def ssh_install_openwrt_bis(password):
+    # version de la fonction utilisant un shell interactif
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
+    print("Connection à la box en ssh ")
+    ssh.connect(hostname=ROUTER_IP, port=22, username='root', password=password)
+
+    with SCPClient(ssh.get_transport()) as scp_client:
+        scp_client.put(FLASH_SCRIPT, "/tmp/flash_firmware.sh")
+        scp_client.put(OPENWRT_PATH, "/tmp/openwrt.bin")
+
+
+    channel = ssh.invoke_shell()
+    stdin_f = channel.makefile('wb')
+    stdout_f = channel.makefile('r')
+    def execute(cmd) :
+        cmd = cmd.strip('\n')
+        stdin_f.write(cmd + '\n')
+        finish = 'end of stdOUT buffer. finished with exit status'
+        echo_cmd = 'echo {} $?'.format(finish)
+        stdin_f.write(echo_cmd + '\n')
+        shin = stdin_f
+        stdin_f.flush()
+
+        shout = []
+        sherr = []
+        exit_status = 0
+        for line in stdout_f:
+            if str(line).startswith(cmd) or str(line).startswith(echo_cmd):
+                # up for now filled with shell junk from stdin
+                shout = []
+            elif str(line).startswith(finish):
+                # our finish command ends with the exit status
+                exit_status = int(str(line).rsplit(maxsplit=1)[1])
+                if exit_status:
+                    # stderr is combined with stdout.
+                    # thus, swap sherr with shout in a case of failure.
+                    sherr = shout
+                    shout = []
+                break
+            else:
+                # get rid of 'coloring and formatting' special characters
+                shout.append(re.compile(r'(\x9B|\x1B\[)[0-?]*[ -/]*[@-~]').sub('', line).
+                             replace('\b', '').replace('\r', ''))
+
+        # first and last lines of shout/sherr contain a prompt
+        if shout and echo_cmd in shout[-1]:
+            shout.pop()
+        if shout and cmd in shout[0]:
+            shout.pop(0)
+        if sherr and echo_cmd in sherr[-1]:
+            sherr.pop()
+        if sherr and cmd in sherr[0]:
+            sherr.pop(0)
+
+        return shin, shout, sherr
+
+
+    shin, shout, sherr = execute("echo \'Test commande echo via invoke_shell\'")
+    print(shin, shout, sherr)
+
+    print("Changement des permissions sur flash_firmware.sh :")
+    shin, shout, sherr = execute("chmod +x /tmp/flash_firmware.sh")
+    print(shin, shout, sherr)
+    
+    print("Lance le script flash_firmware.sh")
+    shin, shout, sherr = execute("/bin/ash /tmp/flash_firmware.sh &")
+    print(shin, shout, sherr)
 
 def ssh_openwrt_set_passwd(admin_passwd, pwd):
     print("etape a")
