@@ -1,6 +1,10 @@
 import os
 
-MAX_WAIT = 120 #anciennement 15
+DEBUG = False
+HEADLESS_MODE = False  #pour rendre la simulation du navigateur headless
+
+
+MAX_WAIT = 120
 ROUTER_IP = "192.168.31.1"
 ROUTER_URL = f"http://{ROUTER_IP}/cgi-bin/luci"
 

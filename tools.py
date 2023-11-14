@@ -26,40 +26,11 @@ def check_port_open(address: str, port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         return sock.connect_ex((address, port)) == 0
 
-
 def ssh_install_openwrt(password):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    print("Connection à la box en ssh ")
-    ssh.connect(hostname=ROUTER_IP, port=22, username='root', password=password)
-
-    with SCPClient(ssh.get_transport()) as scp_client:
-        scp_client.put(FLASH_SCRIPT, "/tmp/flash_firmware.sh")
-        scp_client.put(OPENWRT_PATH, "/tmp/openwrt.bin")
-    print("Changement des permissions sur flash_firmware.sh :")
-    stdin, stdout, stderr = ssh.exec_command("chmod +x /tmp/flash_firmware.sh")
-    
-    print("".join(stdout.readlines()))
-    print("Lance le script flash_firmware.sh")
-    # stdin, stdout, stderr = ssh.exec_command("cat /etc/passwd")
-    
-#FIXME : utiliser invoke_shell pour executer les commandes
-
-    stdin, stdout, stderr = ssh.exec_command("/bin/ash /tmp/flash_firmware.sh")
-    # stdout.channel.recv_exit_status()
-    input("waiting input")
-    print("stdout")
-    print("".join(stderr.readlines()))
-    print("stderr")
-    print("".join(stdout.readlines()))
-
-def ssh_install_openwrt_bis(password):
-    # version de la fonction utilisant un shell interactif
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    print("Connection à la box en ssh ")
+    print("[ssh] Connection à la box en ssh ")
     ssh.connect(hostname=ROUTER_IP, port=22, username='root', password=password)
 
     with SCPClient(ssh.get_transport()) as scp_client:
@@ -112,17 +83,15 @@ def ssh_install_openwrt_bis(password):
 
         return shin, shout, sherr
 
-
-    shin, shout, sherr = execute("echo \'Test commande echo via invoke_shell\'")
-    print(shin, shout, sherr)
-
-    print("Changement des permissions sur flash_firmware.sh :")
+    print("[ssh] Changement des permissions sur flash_firmware.sh :")
     shin, shout, sherr = execute("chmod +x /tmp/flash_firmware.sh")
-    print(shin, shout, sherr)
+    if DEBUG :
+        print(shin, shout, sherr)
     
-    print("Lance le script flash_firmware.sh")
+    print("[ssh] Lance le script flash_firmware.sh")
     shin, shout, sherr = execute("/bin/ash /tmp/flash_firmware.sh &")
-    print(shin, shout, sherr)
+    if DEBUG :
+        print(shin, shout, sherr)
 
 def ssh_openwrt_set_passwd(admin_passwd, pwd):
     print("etape a")
